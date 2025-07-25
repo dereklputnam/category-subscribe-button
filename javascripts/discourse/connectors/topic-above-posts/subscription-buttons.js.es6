@@ -1,8 +1,6 @@
-import { ajax } from "discourse/lib/ajax";
-
 export default {
   setupComponent(args, component) {
-    const currentUser = args.currentUser || component.currentUser;
+    const currentUser = this.currentUser;
     const topic = args.model;
     const category = topic?.category;
     
@@ -11,17 +9,6 @@ export default {
       return;
     }
 
-    // Parse category settings (handle list_type: category format)
-    function parseCategories(categoryData) {
-      if (!categoryData) return [];
-      if (Array.isArray(categoryData)) {
-        return categoryData.map(item => {
-          const id = typeof item === 'object' ? item.id : item;
-          return parseInt(id);
-        }).filter(id => !isNaN(id) && id > 0);
-      }
-      return [];
-    }
 
     // Get notification level
     let notificationLevel = 1; // Default to Regular
@@ -36,12 +23,10 @@ export default {
       notificationLevel = 0; // Muted
     }
 
-    // Category detection using settings
-    const subscribeIds = parseCategories(settings.subscribe_categories);
-    const watchingIds = parseCategories(settings.watching_categories);
-    
-    const isNewsCategory = subscribeIds.includes(category.id);
-    const isSecurityCategory = watchingIds.includes(category.id);
+    // Category detection logic (name-based like original)
+    const categoryName = category.name?.toLowerCase() || "";
+    const isNewsCategory = categoryName.includes("news") || categoryName.includes("announcement");
+    const isSecurityCategory = categoryName.includes("security") || categoryName.includes("advisory");
 
     // Determine what to show
     const shouldShowNewsButton = isNewsCategory && notificationLevel !== 4;
@@ -54,18 +39,8 @@ export default {
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
     
-    // Check for name-only exceptions
-    const subscribeExceptions = parseCategories(settings.subscribe_category_name_only_exceptions);
-    const watchingExceptions = parseCategories(settings.watching_category_name_only_exceptions);
-    
-    let isNameOnlyException = false;
-    if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {
-      isNameOnlyException = true;
-    } else if (shouldShowSecurityButton && watchingExceptions.includes(category.id)) {
-      isNameOnlyException = true;
-    }
-    
-    const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    // Special handling for Security Information category (ID 214) - show only current category name
+    const fullLabel = (category.id === 214) ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
     // Set component properties
     component.setProperties({
@@ -88,7 +63,7 @@ export default {
       const targetLevel = 4;
       const successMessage = `✅ You're now subscribed to ${fullLabel}.`;
       
-      ajax(`/category/${category.id}/notifications`, {
+      require("discourse/lib/ajax").ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: targetLevel }
       }).then(() => {
@@ -133,9 +108,7 @@ export default {
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!component.isDestroying && !component.isDestroyed) {
-            component.set("showSuccessMessage", false);
-          }
+          component.set("showSuccessMessage", false);
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);
@@ -149,7 +122,7 @@ export default {
       const targetLevel = 3;
       const successMessage = `✅ You'll receive all updates for ${fullLabel}.`;
       
-      ajax(`/category/${category.id}/notifications`, {
+      require("discourse/lib/ajax").ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: targetLevel }
       }).then(() => {
@@ -175,9 +148,7 @@ export default {
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!component.isDestroying && !component.isDestroyed) {
-            component.set("showSuccessMessage", false);
-          }
+          component.set("showSuccessMessage", false);
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);

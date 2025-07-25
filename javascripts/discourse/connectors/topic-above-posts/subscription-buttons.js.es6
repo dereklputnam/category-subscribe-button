@@ -2,7 +2,7 @@ import { ajax } from "discourse/lib/ajax";
 
 export default {
   setupComponent(args, component) {
-    const currentUser = this.currentUser;
+    const currentUser = args.currentUser || component.currentUser;
     const topic = args.model;
     const category = topic?.category;
     
@@ -37,8 +37,8 @@ export default {
     }
 
     // Category detection using settings
-    const subscribeIds = parseCategories(this.siteSettings.subscribe_categories);
-    const watchingIds = parseCategories(this.siteSettings.watching_categories);
+    const subscribeIds = parseCategories(settings.subscribe_categories);
+    const watchingIds = parseCategories(settings.watching_categories);
     
     const isNewsCategory = subscribeIds.includes(category.id);
     const isSecurityCategory = watchingIds.includes(category.id);
@@ -49,15 +49,14 @@ export default {
     const shouldRender = shouldShowNewsButton || shouldShowSecurityButton;
 
     // Get category label with exception handling
-    const site = this.site;
-    const allCategories = site.get("categories");
+    const allCategories = Discourse.__container__.lookup("site:main").get("categories");
     const parent = category.parent_category_id
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
     
     // Check for name-only exceptions
-    const subscribeExceptions = parseCategories(this.siteSettings.subscribe_category_name_only_exceptions);
-    const watchingExceptions = parseCategories(this.siteSettings.watching_category_name_only_exceptions);
+    const subscribeExceptions = parseCategories(settings.subscribe_category_name_only_exceptions);
+    const watchingExceptions = parseCategories(settings.watching_category_name_only_exceptions);
     
     let isNameOnlyException = false;
     if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {
@@ -78,13 +77,14 @@ export default {
       currentUser,
       notificationLevel
     });
-  },
 
-  actions: {
-    subscribeToNews() {
-      const category = this.get("category");
-      const currentUser = this.get("currentUser");
-      const fullLabel = this.get("fullLabel");
+    // Define actions on the component
+    component.actions = component.actions || {};
+    
+    component.actions.subscribeToNews = function() {
+      const category = component.get("category");
+      const currentUser = component.get("currentUser");
+      const fullLabel = component.get("fullLabel");
       const targetLevel = 4;
       const successMessage = `✅ You're now subscribed to ${fullLabel}.`;
       
@@ -124,7 +124,7 @@ export default {
         }
 
         // Show success message
-        this.setProperties({
+        component.setProperties({
           showSuccessMessage: true,
           successMessage: successMessage,
           shouldShowNewsButton: false,
@@ -133,19 +133,19 @@ export default {
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!this.isDestroying && !this.isDestroyed) {
-            this.set("showSuccessMessage", false);
+          if (!component.isDestroying && !component.isDestroyed) {
+            component.set("showSuccessMessage", false);
           }
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);
       });
-    },
+    };
 
-    subscribeToSecurity() {
-      const category = this.get("category");
-      const currentUser = this.get("currentUser");
-      const fullLabel = this.get("fullLabel");
+    component.actions.subscribeToSecurity = function() {
+      const category = component.get("category");
+      const currentUser = component.get("currentUser");
+      const fullLabel = component.get("fullLabel");
       const targetLevel = 3;
       const successMessage = `✅ You'll receive all updates for ${fullLabel}.`;
       
@@ -166,7 +166,7 @@ export default {
         }
 
         // Show success message
-        this.setProperties({
+        component.setProperties({
           showSuccessMessage: true,
           successMessage: successMessage,
           shouldShowNewsButton: false,
@@ -175,13 +175,13 @@ export default {
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!this.isDestroying && !this.isDestroyed) {
-            this.set("showSuccessMessage", false);
+          if (!component.isDestroying && !component.isDestroyed) {
+            component.set("showSuccessMessage", false);
           }
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);
       });
-    }
+    };
   }
 };

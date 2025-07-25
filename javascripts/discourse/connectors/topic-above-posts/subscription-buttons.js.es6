@@ -1,0 +1,1 @@
+// This file is intentionally empty - functionality moved to head_tag.html for compatibility

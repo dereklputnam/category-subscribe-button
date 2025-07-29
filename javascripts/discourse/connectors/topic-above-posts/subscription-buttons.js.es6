@@ -72,6 +72,17 @@ export default {
     const isNameOnlyException = subscribeCategoryNameOnlyExceptions.includes(category.name) || 
                                watchingCategoryNameOnlyExceptions.includes(category.name);
     
+    // Debug the settings parsing
+    console.log("Settings Debug:", {
+      categoryName: category.name,
+      rawSubscribeExceptions: settings?.subscribe_category_name_only_exceptions,
+      parsedSubscribeExceptions: subscribeCategoryNameOnlyExceptions,
+      rawWatchingExceptions: settings?.watching_category_name_only_exceptions,
+      parsedWatchingExceptions: watchingCategoryNameOnlyExceptions,
+      isNameOnlyException: isNameOnlyException,
+      parentName: parent?.name
+    });
+    
     // Simple logic: if it's a name-only exception, just use category name, otherwise use parent + category
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 

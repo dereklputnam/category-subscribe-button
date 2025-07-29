@@ -162,62 +162,43 @@
 }
 
 /* Admin settings styling - Fix category dropdown overflow */
-.admin-detail .admin-container,
-.admin-container .admin-detail,
-body.admin-interface {
+.admin-detail,
+.admin-container {
   
-  // Target theme component settings specifically
-  .admin-theme-component,
-  .theme-settings-editor,
-  .theme-setting {
+  // Force all setting values to have reasonable width constraints
+  .setting .setting-value {
+    max-width: 800px !important;
+    width: 100% !important;
+    overflow: hidden !important;
     
-    .setting {
-      .setting-value {
-        max-width: calc(100vw - 300px) !important;
-        overflow: hidden !important;
-        
-        // Category chooser/multi-select dropdowns
-        .category-chooser,
-        .multi-select,
-        .select-kit {
-          max-width: 100% !important;
-          
-          .select-kit-header,
-          .multi-select-header {
-            max-width: 100% !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            
-            .selected-list,
-            .selected-content {
-              display: flex !important;
-              flex-wrap: wrap !important;
-              gap: 4px !important;
-              max-width: 100% !important;
-              
-              .selected-category,
-              .selected-name,
-              .choice {
-                display: inline-block !important;
-                max-width: 180px !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                white-space: nowrap !important;
-                margin: 2px !important;
-              }
-            }
-          }
-        }
-        
-        // Text inputs that might contain long category lists
-        input[type="text"] {
-          max-width: 100% !important;
-          word-wrap: break-word !important;
-          white-space: pre-wrap !important;
-          overflow-wrap: break-word !important;
-        }
-      }
+    // Any multi-select or dropdown
+    * {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    // Text content that might overflow
+    .select-kit-header-wrapper,
+    .select-kit-header,
+    .category-chooser,
+    input[type="text"] {
+      max-width: 100% !important;
+      white-space: pre-wrap !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      word-break: break-all !important;
+    }
+  }
+}
+
+// Global override for any admin interface overflow
+.admin-interface {
+  .setting-value {
+    max-width: 800px !important;
+    
+    * {
+      max-width: 100% !important;
+      word-wrap: break-word !important;
     }
   }
 }

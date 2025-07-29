@@ -68,29 +68,12 @@ export default {
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
     
-    // Check if this category should show name only based on settings (match by name)
-    const shouldShowNameOnly = (isNewsCategory && subscribeCategoryNameOnlyExceptions.includes(category.name)) ||
-                              (isSecurityCategory && watchingCategoryNameOnlyExceptions.includes(category.name));
+    // Check if this category should show name only (simple approach)
+    const isNameOnlyException = subscribeCategoryNameOnlyExceptions.includes(category.name) || 
+                               watchingCategoryNameOnlyExceptions.includes(category.name);
     
-    // Debug logging
-    console.log("Category Debug:", {
-      categoryId: category.id,
-      categoryName: category.name,
-      isNewsCategory,
-      isSecurityCategory,
-      subscribeCategoryNameOnlyExceptions,
-      watchingCategoryNameOnlyExceptions,
-      shouldShowNameOnly,
-      parentName: parent?.name,
-      nameMatchCheck: {
-        newsMatch: subscribeCategoryNameOnlyExceptions.includes(category.name),
-        securityMatch: watchingCategoryNameOnlyExceptions.includes(category.name),
-        exactCategoryName: `"${category.name}"`,
-        exceptionsList: subscribeCategoryNameOnlyExceptions.map(name => `"${name}"`)
-      }
-    });
-    
-    const fullLabel = shouldShowNameOnly ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    // Simple logic: if it's a name-only exception, just use category name, otherwise use parent + category
+    const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
     // Set component properties
     component.setProperties({

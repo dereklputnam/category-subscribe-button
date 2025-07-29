@@ -9,6 +9,12 @@ export default {
       return;
     }
 
+    // Get theme settings
+    const settings = this.site.theme_settings || {};
+    const subscribeCategories = settings.subscribe_categories ? settings.subscribe_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const subscribeCategoryNameOnlyExceptions = settings.subscribe_category_name_only_exceptions ? settings.subscribe_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const watchingCategories = settings.watching_categories ? settings.watching_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const watchingCategoryNameOnlyExceptions = settings.watching_category_name_only_exceptions ? settings.watching_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
 
     // Get notification level
     let notificationLevel = 1; // Default to Regular
@@ -23,24 +29,26 @@ export default {
       notificationLevel = 0; // Muted
     }
 
-    // Category detection logic (name-based like original)
-    const categoryName = category.name?.toLowerCase() || "";
-    const isNewsCategory = categoryName.includes("news") || categoryName.includes("announcement");
-    const isSecurityCategory = categoryName.includes("security") || categoryName.includes("advisory");
+    // Category detection logic using settings
+    const isNewsCategory = subscribeCategories.includes(category.id);
+    const isSecurityCategory = watchingCategories.includes(category.id);
 
     // Determine what to show
     const shouldShowNewsButton = isNewsCategory && notificationLevel !== 4;
     const shouldShowSecurityButton = isSecurityCategory && notificationLevel !== 3;
     const shouldRender = shouldShowNewsButton || shouldShowSecurityButton;
 
-    // Get category label with exception handling
+    // Get category label with settings-based exception handling
     const allCategories = Discourse.__container__.lookup("site:main").get("categories");
     const parent = category.parent_category_id
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
     
-    // Special handling for Security Information category (ID 214) - show only current category name
-    const fullLabel = (category.id === 214) ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    // Check if this category should show name only based on settings
+    const shouldShowNameOnly = (isNewsCategory && subscribeCategoryNameOnlyExceptions.includes(category.id)) ||
+                              (isSecurityCategory && watchingCategoryNameOnlyExceptions.includes(category.id));
+    
+    const fullLabel = shouldShowNameOnly ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
     // Set component properties
     component.setProperties({

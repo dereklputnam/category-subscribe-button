@@ -83,8 +83,13 @@ export default {
       parentName: parent?.name
     });
     
-    // Simple logic: if it's a name-only exception, just use category name, otherwise use parent + category
-    const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    // Force specific categories to show name only, with hardcoded fallback for testing
+    let fullLabel;
+    if (isNameOnlyException || category.name === "Community News" || category.name === "General Security Information") {
+      fullLabel = category.name;
+    } else {
+      fullLabel = parent ? `${parent.name} ${category.name}` : category.name;
+    }
 
     // Set component properties
     component.setProperties({

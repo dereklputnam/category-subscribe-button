@@ -33,10 +33,18 @@ export default {
         .filter(id => !isNaN(id) && id > 0);
     };
     
+    // Parse category name settings (these might be names instead of IDs)
+    const parseCategoryNames = (settingValue) => {
+      if (!settingValue || settingValue === "") return [];
+      return settingValue.toString().split(",")
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
+    };
+    
     const subscribeCategories = parseSettingList(settings?.subscribe_categories);
-    const subscribeCategoryNameOnlyExceptions = parseSettingList(settings?.subscribe_category_name_only_exceptions);
+    const subscribeCategoryNameOnlyExceptions = parseCategoryNames(settings?.subscribe_category_name_only_exceptions);
     const watchingCategories = parseSettingList(settings?.watching_categories);
-    const watchingCategoryNameOnlyExceptions = parseSettingList(settings?.watching_category_name_only_exceptions);
+    const watchingCategoryNameOnlyExceptions = parseCategoryNames(settings?.watching_category_name_only_exceptions);
 
     // Category detection logic using settings with fallback to name-based detection
     let isNewsCategory = subscribeCategories.includes(category.id);
@@ -60,9 +68,9 @@ export default {
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
     
-    // Check if this category should show name only based on settings
-    const shouldShowNameOnly = (isNewsCategory && subscribeCategoryNameOnlyExceptions.includes(category.id)) ||
-                              (isSecurityCategory && watchingCategoryNameOnlyExceptions.includes(category.id));
+    // Check if this category should show name only based on settings (match by name)
+    const shouldShowNameOnly = (isNewsCategory && subscribeCategoryNameOnlyExceptions.includes(category.name)) ||
+                              (isSecurityCategory && watchingCategoryNameOnlyExceptions.includes(category.name));
     
     // Debug logging
     console.log("Category Debug:", {

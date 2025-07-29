@@ -9,13 +9,6 @@ export default {
       return;
     }
 
-    // Get theme settings
-    const settings = this.site.theme_settings || {};
-    const subscribeCategories = settings.subscribe_categories ? settings.subscribe_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const subscribeCategoryNameOnlyExceptions = settings.subscribe_category_name_only_exceptions ? settings.subscribe_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const watchingCategories = settings.watching_categories ? settings.watching_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const watchingCategoryNameOnlyExceptions = settings.watching_category_name_only_exceptions ? settings.watching_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-
     // Get notification level
     let notificationLevel = 1; // Default to Regular
     
@@ -29,9 +22,23 @@ export default {
       notificationLevel = 0; // Muted
     }
 
-    // Category detection logic using settings
-    const isNewsCategory = subscribeCategories.includes(category.id);
-    const isSecurityCategory = watchingCategories.includes(category.id);
+    // Get theme settings using the working approach
+    const settings = this.themeSettings;
+    const subscribeCategories = settings?.subscribe_categories ? settings.subscribe_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const subscribeCategoryNameOnlyExceptions = settings?.subscribe_category_name_only_exceptions ? settings.subscribe_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const watchingCategories = settings?.watching_categories ? settings.watching_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    const watchingCategoryNameOnlyExceptions = settings?.watching_category_name_only_exceptions ? settings.watching_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+
+    // Category detection logic using settings with fallback to name-based detection
+    let isNewsCategory = subscribeCategories.includes(category.id);
+    let isSecurityCategory = watchingCategories.includes(category.id);
+    
+    // Fallback to name-based detection if no categories configured in settings
+    if (subscribeCategories.length === 0 && watchingCategories.length === 0) {
+      const categoryName = category.name?.toLowerCase() || "";
+      isNewsCategory = categoryName.includes("news") || categoryName.includes("announcement");
+      isSecurityCategory = categoryName.includes("security") || categoryName.includes("advisory");
+    }
 
     // Determine what to show
     const shouldShowNewsButton = isNewsCategory && notificationLevel !== 4;

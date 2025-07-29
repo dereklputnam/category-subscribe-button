@@ -81,7 +81,13 @@ export default {
       subscribeCategoryNameOnlyExceptions,
       watchingCategoryNameOnlyExceptions,
       shouldShowNameOnly,
-      parentName: parent?.name
+      parentName: parent?.name,
+      nameMatchCheck: {
+        newsMatch: subscribeCategoryNameOnlyExceptions.includes(category.name),
+        securityMatch: watchingCategoryNameOnlyExceptions.includes(category.name),
+        exactCategoryName: `"${category.name}"`,
+        exceptionsList: subscribeCategoryNameOnlyExceptions.map(name => `"${name}"`)
+      }
     });
     
     const fullLabel = shouldShowNameOnly ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);

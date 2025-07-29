@@ -72,6 +72,17 @@ export default {
     const isNameOnlyException = subscribeCategoryNameOnlyExceptions.includes(category.name) || 
                                watchingCategoryNameOnlyExceptions.includes(category.name);
     
+    // Quick debug to see what's happening
+    if (category.name === "Community News") {
+      console.log("Community News Debug:", {
+        categoryName: category.name,
+        subscribeCategoryNameOnlyExceptions,
+        watchingCategoryNameOnlyExceptions,
+        isNameOnlyException,
+        rawSettings: settings?.subscribe_category_name_only_exceptions
+      });
+    }
+    
     // Generate label: use only category name if it's a name-only exception, otherwise include parent
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 

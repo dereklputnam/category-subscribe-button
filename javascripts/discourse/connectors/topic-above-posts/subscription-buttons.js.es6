@@ -24,10 +24,19 @@ export default {
 
     // Get theme settings using the working approach
     const settings = this.themeSettings;
-    const subscribeCategories = settings?.subscribe_categories ? settings.subscribe_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const subscribeCategoryNameOnlyExceptions = settings?.subscribe_category_name_only_exceptions ? settings.subscribe_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const watchingCategories = settings?.watching_categories ? settings.watching_categories.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
-    const watchingCategoryNameOnlyExceptions = settings?.watching_category_name_only_exceptions ? settings.watching_category_name_only_exceptions.split("|").map(id => parseInt(id)).filter(id => !isNaN(id)) : [];
+    
+    // Parse settings with proper null/undefined checks and trimming
+    const parseSettingList = (settingValue) => {
+      if (!settingValue || settingValue === "") return [];
+      return settingValue.toString().split("|")
+        .map(id => parseInt(id.trim()))
+        .filter(id => !isNaN(id) && id > 0);
+    };
+    
+    const subscribeCategories = parseSettingList(settings?.subscribe_categories);
+    const subscribeCategoryNameOnlyExceptions = parseSettingList(settings?.subscribe_category_name_only_exceptions);
+    const watchingCategories = parseSettingList(settings?.watching_categories);
+    const watchingCategoryNameOnlyExceptions = parseSettingList(settings?.watching_category_name_only_exceptions);
 
     // Category detection logic using settings with fallback to name-based detection
     let isNewsCategory = subscribeCategories.includes(category.id);

@@ -160,3 +160,48 @@
     font-size: 14px;
   }
 }
+
+/* Admin settings styling */
+.admin-container {
+  .setting {
+    .setting-value {
+      .category-selector,
+      .category-chooser {
+        .selected-category {
+          display: inline-block;
+          margin: 2px 4px 2px 0;
+          white-space: nowrap;
+        }
+        
+        .category-list {
+          max-width: 100%;
+          word-wrap: break-word;
+          white-space: normal;
+        }
+      }
+      
+      /* Fix for theme settings category dropdowns */
+      .theme-setting-category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        max-width: 100%;
+        
+        .category-badge {
+          display: inline-block;
+          white-space: nowrap;
+        }
+      }
+      
+      /* General fix for long text in theme settings */
+      .theme-setting-editor {
+        .setting-value {
+          max-width: 100%;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          white-space: normal;
+        }
+      }
+    }
+  }
+}

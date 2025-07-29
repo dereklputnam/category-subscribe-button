@@ -161,46 +161,51 @@
   }
 }
 
-/* Admin settings styling */
-.admin-container {
-  .setting {
-    .setting-value {
-      .category-selector,
-      .category-chooser {
-        .selected-category {
-          display: inline-block;
-          margin: 2px 4px 2px 0;
-          white-space: nowrap;
-        }
+/* Admin settings styling - Fix category dropdown overflow */
+.admin-container,
+.admin-detail {
+  // Target the specific setting value containers
+  .setting-value {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    
+    // Multi-select dropdowns (like category lists)
+    .multi-select {
+      max-width: 100% !important;
+      
+      .multi-select-header {
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
         
-        .category-list {
-          max-width: 100%;
-          word-wrap: break-word;
-          white-space: normal;
+        .selected-list {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          gap: 4px !important;
+          max-width: 100% !important;
+          
+          .selected-category,
+          .selected-name {
+            display: inline-block !important;
+            max-width: 200px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
         }
       }
+    }
+    
+    // Theme setting specific overrides
+    .theme-setting {
+      max-width: 100% !important;
+      overflow: hidden !important;
       
-      /* Fix for theme settings category dropdowns */
-      .theme-setting-category-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        max-width: 100%;
-        
-        .category-badge {
-          display: inline-block;
-          white-space: nowrap;
-        }
-      }
-      
-      /* General fix for long text in theme settings */
-      .theme-setting-editor {
-        .setting-value {
-          max-width: 100%;
-          overflow-wrap: break-word;
-          word-wrap: break-word;
-          white-space: normal;
-        }
+      input[type="text"] {
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+        white-space: normal !important;
       }
     }
   }

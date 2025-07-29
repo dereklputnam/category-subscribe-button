@@ -55,6 +55,18 @@ export default {
     const shouldShowNameOnly = (isNewsCategory && subscribeCategoryNameOnlyExceptions.includes(category.id)) ||
                               (isSecurityCategory && watchingCategoryNameOnlyExceptions.includes(category.id));
     
+    // Debug logging
+    console.log("Category Debug:", {
+      categoryId: category.id,
+      categoryName: category.name,
+      isNewsCategory,
+      isSecurityCategory,
+      subscribeCategoryNameOnlyExceptions,
+      watchingCategoryNameOnlyExceptions,
+      shouldShowNameOnly,
+      parentName: parent?.name
+    });
+    
     const fullLabel = shouldShowNameOnly ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
     // Set component properties

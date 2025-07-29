@@ -22,8 +22,9 @@ export default {
       notificationLevel = 0; // Muted
     }
 
-    // Get theme settings using site.theme_settings
-    const settings = this.site?.theme_settings || {};
+    // Get theme settings using the correct approach for connectors
+    const site = Discourse.__container__.lookup("site:main");
+    const settings = site.theme_settings || {};
     
     // Parse settings with proper null/undefined checks and trimming
     const parseSettingList = (settingValue) => {

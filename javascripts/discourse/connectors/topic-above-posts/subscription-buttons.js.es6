@@ -85,7 +85,12 @@ export default {
     }
     
     // Generate label: use only category name if it's a name-only exception, otherwise include parent
-    const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    // Add hardcoded fallback until settings parsing is working
+    const shouldUseNameOnly = isNameOnlyException || 
+                             category.name === "Community News" || 
+                             category.name === "General Security Information";
+    
+    const fullLabel = shouldUseNameOnly ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
     // Set component properties
     component.setProperties({

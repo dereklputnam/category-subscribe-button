@@ -1,66 +1,23 @@
+subscribe_categories:
+  type: list
+  list_type: category
+  default: ""
+  description: "Select categories that should receive 'news treatment' (notification level 4 - Watching First Post). Shows 'Subscribe' button. Will display as 'Parent > Child' format (e.g., '1Secure News')."
 
-solutions:
-  type: objects
-  default: 
-    - slug: "directory-management"
-      title: "Directory Management"
-      subtitle: "Netwrix Directory<span class=\"break-medium\"><br></span> Management"
-      description: "Stay informed with the latest updates and security alerts for Auditor, Directory Manager, and Password Policy Enforcer — your single source for what's new, what's critical, and what's coming next in Directory Management."
-      level_4_categories: "90,110,118"
-      level_3_categories: "195,204,210"
-    - slug: "endpoint-management"
-      title: "Endpoint Management"
-      subtitle: "Netwrix Endpoint<span class=\"break-medium\"><br></span> Management"
-      description: "Stay informed with the latest updates and security alerts for Endpoint Protector, Endpoint Policy Manager, and Change Tracker — your single source for what's new, what's critical, and what's coming next in Endpoint Management."
-      level_4_categories: "106,130,98"
-      level_3_categories: "202,208,198"
-    - slug: "identity-management"
-      title: "Identity Management"
-      subtitle: "Netwrix Identity<span class=\"break-medium\"><br></span> Management"
-      description: "Stay informed with the latest updates and security alerts for Identity Manager, Directory Manager, and Password Policy Enforcer — your single source for what's new, what's critical, and what's coming next in Identity Management."
-      level_4_categories: "150,110,118"
-      level_3_categories: "196,204,210"
-    - slug: "itdr"
-      title: "ITDR"
-      subtitle: "Netwrix Identity Threat Detection &<span class=\"break-medium\"><br></span> Response (ITDR)"
-      description: "Stay informed with the latest updates and security alerts for PingCastle, Access Analyzer, Threat Manager, Threat Prevention, and Recovery for AD — your single source for what's new, what's critical, and what's coming next in ITDR."
-      level_4_categories: "126,94,162,160,138"
-      level_3_categories: "209,197,201,199,206"
-    - slug: "pam"
-      title: "Privileged Access Management"
-      subtitle: "Netwrix Privileged Access<span class=\"break-medium\"><br></span> Management"
-      description: "Stay informed with the latest updates and security alerts for Privilege Secure, Endpoint Privilege Manager, and Password Secure — your single source for what's new, what's critical, and what's coming next in Privileged Access Management."
-      level_4_categories: "134,130,122"
-      level_3_categories: "207,208,211"
-    - slug: "dspm"
-      title: "DSPM"
-      subtitle: "Netwrix Data Security Posture<span class=\"break-medium\"><br></span> Management (DSPM)"
-      description: "Stay informed with the latest updates and security alerts for Auditor, Access Analyzer, Data Classification, and Endpoint Protector — your single source for what's new, what's critical, and what's coming next in DSPM."
-      level_4_categories: "90,94,102,106"
-      level_3_categories: "195,197,200,202"
-  schema:
-    name: "Solution"
-    identifier: "title"
-    properties:
-      slug:
-        type: string
-        required: true
-        description: "IMPORTANT: This slug must exactly match the slug configured in your Custom Topic Lists theme component"
-      title:
-        type: string
-        required: true
-        description: "Short title displayed in navigation and as tab name"
-      subtitle:
-        type: string
-        required: true
-        description: "Full title displayed as page header ('News & Security Advisories' is automatically added on the next line). For responsive line breaks on smaller screens, insert: [span class=\"break-medium\"][br][/span] (replace brackets with angle brackets)"
-      description:
-        type: string
-        required: true
-        description: "Description text shown on the page"
-      level_4_categories:
-        type: string
-        description: "Comma-separated category IDs for 'Watching First Post' notifications (e.g., '5,12,8')"
-      level_3_categories:
-        type: string
-        description: "Comma-separated category IDs for 'Watching' notifications (e.g., '3,7,15')"
+subscribe_category_name_only_exceptions:
+  type: list
+  list_type: category
+  default: ""
+  description: "Select subscribe categories that should display only their category name (not 'Parent > Child' format). E.g., 'Security Advisories' instead of '1Secure Security Advisories'."
+
+watching_categories:
+  type: list
+  list_type: category
+  default: ""
+  description: "Select categories that should receive 'security advisory treatment' (notification level 3 - Watching). Shows 'Watch All' button. Will display as 'Parent > Child' format (e.g., '1Secure Security Advisories')."
+
+watching_category_name_only_exceptions:
+  type: list
+  list_type: category
+  default: ""
+  description: "Select watching categories that should display only their category name (not 'Parent > Child' format). E.g., 'Security Advisories' instead of '1Secure Security Advisories'."

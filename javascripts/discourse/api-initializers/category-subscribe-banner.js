@@ -1,7 +1,7 @@
 import { apiInitializer } from "discourse/lib/api";
 import { ajax } from "discourse/lib/ajax";
 
-export default apiInitializer("0.11.1", (api) => {
+export default apiInitializer("category-subscribe-banner", (api) => {
   console.log("🎯 Category Subscribe Banner: Initializer loaded!");
 
   api.onPageChange((url) => {

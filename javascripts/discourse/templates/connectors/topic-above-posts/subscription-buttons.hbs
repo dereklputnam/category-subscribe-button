@@ -1,7 +1,7 @@
-{{#if shouldRender}}
+{{#if @outletArgs.shouldRender}}
   <div class="subscription-notification-wrapper">
     <div class="subscription-notification-container">
-      {{#if shouldShowNewsButton}}
+      {{#if @outletArgs.shouldShowNewsButton}}
         <div class="subscription-notification news-notification">
           <div class="notification-content">
             <div class="notification-icon news-icon">
@@ -11,16 +11,16 @@
             </div>
             <div class="notification-text">
               <h4>Stay Informed</h4>
-              <p>Get notified of all {{fullLabel}} topics</p>
+              <p>Get notified of all {{@outletArgs.fullLabel}} topics</p>
             </div>
           </div>
-          <button class="btn btn-primary subscription-btn" {{action "subscribeToNews"}}>
+          <button class="btn btn-primary subscription-btn" {{on "click" @outletArgs.subscribeToNews}}>
             Subscribe
           </button>
         </div>
       {{/if}}
 
-      {{#if shouldShowSecurityButton}}
+      {{#if @outletArgs.shouldShowSecurityButton}}
         <div class="subscription-notification security-notification">
           <div class="notification-content">
             <div class="notification-icon security-icon">
@@ -30,18 +30,18 @@
             </div>
             <div class="notification-text">
               <h4>Stay Informed</h4>
-              <p>Receive all {{fullLabel}} updates</p>
+              <p>Receive all {{@outletArgs.fullLabel}} updates</p>
             </div>
           </div>
-          <button class="btn subscription-btn security-btn" {{action "subscribeToSecurity"}}>
+          <button class="btn subscription-btn security-btn" {{on "click" @outletArgs.subscribeToSecurity}}>
             Watch All
           </button>
         </div>
       {{/if}}
 
-      {{#if showSuccessMessage}}
+      {{#if @outletArgs.showSuccessMessage}}
         <div class="success-message">
-          {{successMessage}}
+          {{@outletArgs.successMessage}}
         </div>
       {{/if}}
     </div>

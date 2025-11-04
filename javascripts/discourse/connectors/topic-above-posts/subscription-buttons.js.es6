@@ -39,15 +39,15 @@ export default {
     const currentUser = args.currentUser || this.currentUser;
     const topic = args.model;
     const category = topic?.category;
-    
+
     if (!currentUser || !category) {
-      component.set("shouldRender", false);
+      args.shouldRender = false;
       return;
     }
 
     // Get notification level
     let notificationLevel = 1; // Default to Regular
-    
+
     if (currentUser.watched_first_post_category_ids?.includes(category.id)) {
       notificationLevel = 4; // Watching First Post
     } else if (currentUser.watched_category_ids?.includes(category.id)) {
@@ -72,40 +72,25 @@ export default {
     const parent = category.parent_category_id
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
-    
+
     // Check if this category should show only its name based on button type
     const subscribeExceptions = parseCategories(settings.subscribe_category_name_only_exceptions);
     const watchingExceptions = parseCategories(settings.watching_category_name_only_exceptions);
-    
+
     let isNameOnlyException = false;
     if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {
       isNameOnlyException = true;
     } else if (shouldShowSecurityButton && watchingExceptions.includes(category.id)) {
       isNameOnlyException = true;
     }
-    
+
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
 
-    // Set component properties
-    component.setProperties({
-      shouldRender,
-      shouldShowNewsButton,
-      shouldShowSecurityButton,
-      fullLabel,
-      category,
-      currentUser,
-      notificationLevel
-    });
-
-    // Define actions
-    component.actions = component.actions || {};
-    
-    component.actions.subscribeToNews = function() {
-      const category = component.get("category");
-      const currentUser = component.get("currentUser");
+    // Define click handler functions
+    const subscribeToNews = function() {
       const targetLevel = 4;
       const successMessage = `✅ You're now subscribed to ${fullLabel}.`;
-      
+
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: targetLevel }
@@ -114,12 +99,12 @@ export default {
         if (!currentUser.watched_first_post_category_ids) {
           currentUser.watched_first_post_category_ids = [];
         }
-        
+
         // Add to watched_first_post_category_ids if not already there
         if (!currentUser.watched_first_post_category_ids.includes(category.id)) {
           currentUser.watched_first_post_category_ids.push(category.id);
         }
-        
+
         // Remove from other arrays
         if (currentUser.watched_category_ids) {
           const watchingIndex = currentUser.watched_category_ids.indexOf(category.id);
@@ -127,14 +112,14 @@ export default {
             currentUser.watched_category_ids.splice(watchingIndex, 1);
           }
         }
-        
+
         if (currentUser.tracked_category_ids) {
           const trackedIndex = currentUser.tracked_category_ids.indexOf(category.id);
           if (trackedIndex > -1) {
             currentUser.tracked_category_ids.splice(trackedIndex, 1);
           }
         }
-        
+
         if (currentUser.muted_category_ids) {
           const mutedIndex = currentUser.muted_category_ids.indexOf(category.id);
           if (mutedIndex > -1) {
@@ -143,30 +128,24 @@ export default {
         }
 
         // Show success message
-        component.setProperties({
-          showSuccessMessage: true,
-          successMessage: successMessage,
-          shouldShowNewsButton: false,
-          shouldShowSecurityButton: false
-        });
+        args.showSuccessMessage = true;
+        args.successMessage = successMessage;
+        args.shouldShowNewsButton = false;
+        args.shouldShowSecurityButton = false;
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!component.isDestroying && !component.isDestroyed) {
-            component.set("showSuccessMessage", false);
-          }
+          args.showSuccessMessage = false;
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);
       });
     };
 
-    component.actions.subscribeToSecurity = function() {
-      const category = component.get("category");
-      const currentUser = component.get("currentUser");
+    const subscribeToSecurity = function() {
       const targetLevel = 3;
       const successMessage = `✅ You'll receive all updates for ${fullLabel}.`;
-      
+
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: targetLevel }
@@ -184,22 +163,31 @@ export default {
         }
 
         // Show success message
-        component.setProperties({
-          showSuccessMessage: true,
-          successMessage: successMessage,
-          shouldShowNewsButton: false,
-          shouldShowSecurityButton: false
-        });
+        args.showSuccessMessage = true;
+        args.successMessage = successMessage;
+        args.shouldShowNewsButton = false;
+        args.shouldShowSecurityButton = false;
 
         // Hide success message after 5 seconds
         setTimeout(() => {
-          if (!component.isDestroying && !component.isDestroyed) {
-            component.set("showSuccessMessage", false);
-          }
+          args.showSuccessMessage = false;
         }, 5000);
       }).catch((error) => {
         console.error("Failed to update category subscription:", error);
       });
     };
+
+    // Set args properties for template
+    Object.assign(args, {
+      shouldRender,
+      shouldShowNewsButton,
+      shouldShowSecurityButton,
+      fullLabel,
+      category,
+      currentUser,
+      notificationLevel,
+      subscribeToNews,
+      subscribeToSecurity
+    });
   }
 };

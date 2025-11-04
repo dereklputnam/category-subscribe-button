@@ -42,11 +42,22 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     console.log("🎯 Category found:", category.name, "ID:", category.id);
 
-    const subscribeCategories = parseCategories(settings.subscribe_categories);
-    const watchingCategories = parseCategories(settings.watching_categories);
+    // Check if settings exists
+    console.log("🎯 Settings object:", typeof settings !== 'undefined' ? settings : "UNDEFINED!");
+    console.log("🎯 Raw subscribe_categories:", typeof settings !== 'undefined' ? settings.subscribe_categories : "N/A");
+    console.log("🎯 Raw watching_categories:", typeof settings !== 'undefined' ? settings.watching_categories : "N/A");
+
+    const subscribeCategories = typeof settings !== 'undefined' ? parseCategories(settings.subscribe_categories) : [];
+    const watchingCategories = typeof settings !== 'undefined' ? parseCategories(settings.watching_categories) : [];
 
     console.log("🎯 Subscribe cats:", subscribeCategories);
     console.log("🎯 Watching cats:", watchingCategories);
+
+    // TEMPORARY: For testing, force category 161 to work
+    if (category.id === 161) {
+      console.log("🎯 HARDCODED TEST: Forcing category 161 to show banner");
+      subscribeCategories.push(161);
+    }
 
     const isNewsCategory = subscribeCategories.includes(category.id);
     const isSecurityCategory = watchingCategories.includes(category.id);

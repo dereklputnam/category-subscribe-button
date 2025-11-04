@@ -53,10 +53,14 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     console.log("🎯 Subscribe cats:", subscribeCategories);
     console.log("🎯 Watching cats:", watchingCategories);
 
-    // TEMPORARY: For testing, force category 161 to work
+    // TEMPORARY: For testing, force categories to work
     if (category.id === 161) {
-      console.log("🎯 HARDCODED TEST: Forcing category 161 to show banner");
+      console.log("🎯 HARDCODED TEST: Forcing category 161 (News) to show subscribe banner");
       subscribeCategories.push(161);
+    }
+    if (category.id === 193) {
+      console.log("🎯 HARDCODED TEST: Forcing category 193 (Security) to show watch banner");
+      watchingCategories.push(193);
     }
 
     const isNewsCategory = subscribeCategories.includes(category.id);

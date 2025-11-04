@@ -1,55 +1,103 @@
 import { apiInitializer } from "discourse/lib/api";
 import { ajax } from "discourse/lib/ajax";
 
-export default apiInitializer("1.0.0", (api) => {
-  api.onPageChange((url, title) => {
+export default apiInitializer("category-subscribe-banner", (api) => {
+  console.log("Category Subscribe Banner: Initializer loaded");
+
+  // Parse category IDs from settings
+  const parseCategories = (categoryData) => {
+    if (!categoryData) return [];
+    if (Array.isArray(categoryData)) {
+      return categoryData.map(item => {
+        const id = typeof item === 'object' ? item.id : item;
+        return parseInt(id);
+      }).filter(id => !isNaN(id) && id > 0);
+    }
+    return [];
+  };
+
+  const showBanner = () => {
+    console.log("Category Subscribe Banner: showBanner called");
+
     const currentUser = api.getCurrentUser();
-    if (!currentUser) return;
+    if (!currentUser) {
+      console.log("Category Subscribe Banner: No current user");
+      return;
+    }
 
-    // Get current topic
-    const topicController = api.container.lookup("controller:topic");
-    if (!topicController) return;
+    // Get the current route
+    const appRoute = api.container.lookup("route:application");
+    const currentRouteName = appRoute?.router?.currentRouteName;
 
-    const topic = topicController.get("model");
-    if (!topic) return;
+    console.log("Category Subscribe Banner: Current route:", currentRouteName);
+
+    // Only run on topic routes
+    if (!currentRouteName || !currentRouteName.startsWith("topic.")) {
+      console.log("Category Subscribe Banner: Not on topic route");
+      document.querySelector('.subscription-notification-wrapper')?.remove();
+      return;
+    }
+
+    // Get current topic from router
+    const router = api.container.lookup("service:router");
+    const currentRoute = router.currentRoute;
+    const topicId = currentRoute?.params?.id || currentRoute?.params?.topic_id;
+
+    console.log("Category Subscribe Banner: Topic ID:", topicId);
+
+    if (!topicId) {
+      console.log("Category Subscribe Banner: No topic ID found");
+      return;
+    }
+
+    // Get topic model
+    const store = api.container.lookup("service:store");
+    const topic = store.peekRecord("topic", topicId);
+
+    console.log("Category Subscribe Banner: Topic:", topic);
+
+    if (!topic || !topic.category) {
+      console.log("Category Subscribe Banner: No topic or category found");
+      return;
+    }
 
     const category = topic.category;
-    if (!category) return;
+    console.log("Category Subscribe Banner: Category:", category.name, "ID:", category.id);
 
-    // Parse settings
-    const parseCategories = (categoryData) => {
-      if (!categoryData) return [];
-      if (Array.isArray(categoryData)) {
-        return categoryData.map(item => {
-          const id = typeof item === 'object' ? item.id : item;
-          return parseInt(id);
-        }).filter(id => !isNaN(id) && id > 0);
-      }
-      return [];
-    };
-
+    // Get configured categories from settings
     const subscribeCategories = parseCategories(settings.subscribe_categories);
     const watchingCategories = parseCategories(settings.watching_categories);
+
+    console.log("Category Subscribe Banner: Subscribe categories:", subscribeCategories);
+    console.log("Category Subscribe Banner: Watching categories:", watchingCategories);
 
     // Check if current category is in our lists
     const isNewsCategory = subscribeCategories.includes(category.id);
     const isSecurityCategory = watchingCategories.includes(category.id);
 
+    console.log("Category Subscribe Banner: Is news?", isNewsCategory, "Is security?", isSecurityCategory);
+
     if (!isNewsCategory && !isSecurityCategory) {
-      // Remove any existing banner
+      console.log("Category Subscribe Banner: Category not configured, removing banner");
       document.querySelector('.subscription-notification-wrapper')?.remove();
       return;
     }
 
-    // Check notification levels
+    // Check notification levels (same as table theme)
     const watchedFirst = currentUser.watched_first_post_category_ids || [];
     const watched = currentUser.watched_category_ids || [];
+
+    console.log("Category Subscribe Banner: User watched_first_post_category_ids:", watchedFirst);
+    console.log("Category Subscribe Banner: User watched_category_ids:", watched);
 
     const shouldShowNewsButton = isNewsCategory && !watchedFirst.includes(category.id);
     const shouldShowSecurityButton = isSecurityCategory && !watched.includes(category.id);
 
+    console.log("Category Subscribe Banner: Show news button?", shouldShowNewsButton);
+    console.log("Category Subscribe Banner: Show security button?", shouldShowSecurityButton);
+
     if (!shouldShowNewsButton && !shouldShowSecurityButton) {
-      // User already subscribed
+      console.log("Category Subscribe Banner: User already subscribed, removing banner");
       document.querySelector('.subscription-notification-wrapper')?.remove();
       return;
     }
@@ -71,6 +119,8 @@ export default apiInitializer("1.0.0", (api) => {
     }
 
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+
+    console.log("Category Subscribe Banner: Creating banner for:", fullLabel);
 
     // Remove existing banner if any
     document.querySelector('.subscription-notification-wrapper')?.remove();
@@ -126,19 +176,36 @@ export default apiInitializer("1.0.0", (api) => {
     bannerHTML += '</div>';
     wrapper.innerHTML = bannerHTML;
 
-    // Insert banner above posts
-    const postsContainer = document.querySelector('.topic-above-post-stream-outlet') ||
-                          document.querySelector('.container.posts') ||
-                          document.querySelector('#topic-title');
+    // Insert banner - try multiple possible locations
+    const possibleLocations = [
+      document.querySelector('.container.posts'),
+      document.querySelector('#topic-title'),
+      document.querySelector('.topic-body'),
+      document.querySelector('#main-outlet')
+    ];
 
-    if (postsContainer) {
-      postsContainer.parentNode.insertBefore(wrapper, postsContainer);
+    let inserted = false;
+    for (const location of possibleLocations) {
+      if (location && location.parentNode) {
+        console.log("Category Subscribe Banner: Inserting banner before:", location);
+        location.parentNode.insertBefore(wrapper, location);
+        inserted = true;
+        break;
+      }
     }
+
+    if (!inserted) {
+      console.log("Category Subscribe Banner: Could not find insertion point!");
+      return;
+    }
+
+    console.log("Category Subscribe Banner: Banner inserted successfully");
 
     // Add click handlers
     const newsBtn = wrapper.querySelector('.subscribe-news-btn');
     if (newsBtn) {
       newsBtn.addEventListener('click', () => {
+        console.log("Category Subscribe Banner: News button clicked");
         ajax(`/category/${category.id}/notifications`, {
           type: "POST",
           data: { notification_level: 4 }
@@ -150,10 +217,10 @@ export default apiInitializer("1.0.0", (api) => {
             currentUser.watched_first_post_category_ids.push(category.id);
           }
 
-          wrapper.innerHTML = `<div class="success-message">✅ You're now subscribed to ${fullLabel}.</div>`;
+          wrapper.innerHTML = `<div class="subscription-notification-container"><div class="success-message">✅ You're now subscribed to ${fullLabel}.</div></div>`;
           setTimeout(() => wrapper.remove(), 5000);
         }).catch((error) => {
-          console.error("Failed to subscribe:", error);
+          console.error("Category Subscribe Banner: Failed to subscribe:", error);
         });
       });
     }
@@ -161,6 +228,7 @@ export default apiInitializer("1.0.0", (api) => {
     const securityBtn = wrapper.querySelector('.subscribe-security-btn');
     if (securityBtn) {
       securityBtn.addEventListener('click', () => {
+        console.log("Category Subscribe Banner: Security button clicked");
         ajax(`/category/${category.id}/notifications`, {
           type: "POST",
           data: { notification_level: 3 }
@@ -172,12 +240,22 @@ export default apiInitializer("1.0.0", (api) => {
             currentUser.watched_category_ids.push(category.id);
           }
 
-          wrapper.innerHTML = `<div class="success-message">✅ You'll receive all updates for ${fullLabel}.</div>`;
+          wrapper.innerHTML = `<div class="subscription-notification-container"><div class="success-message">✅ You'll receive all updates for ${fullLabel}.</div></div>`;
           setTimeout(() => wrapper.remove(), 5000);
         }).catch((error) => {
-          console.error("Failed to subscribe:", error);
+          console.error("Category Subscribe Banner: Failed to subscribe:", error);
         });
       });
     }
+  };
+
+  // Use router service to track route changes
+  api.onPageChange(() => {
+    console.log("Category Subscribe Banner: Page changed");
+    // Use next tick to ensure DOM is ready
+    setTimeout(showBanner, 100);
   });
+
+  // Also run on initial load
+  setTimeout(showBanner, 500);
 });

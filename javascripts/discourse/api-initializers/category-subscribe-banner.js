@@ -127,7 +127,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     if (shouldShowNewsButton) {
       html += `
-        <div class="subscription-notification news-notification" style="display: flex; align-items: center; gap: 16px; border-left: 4px solid var(--tertiary); padding: 16px 0 16px 16px;">
+        <div class="subscription-notification news-notification" style="display: flex; align-items: center; gap: 16px; border-top: 4px solid var(--tertiary); padding: 16px;">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Get notified of all ${fullLabel} topics</p>
@@ -139,12 +139,12 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     if (shouldShowSecurityButton) {
       html += `
-        <div class="subscription-notification security-notification" style="display: flex; align-items: center; gap: 16px; border-left: 4px solid #ff0000; padding: 16px 0 16px 16px; ${shouldShowNewsButton ? 'margin-top: 12px;' : ''}">
+        <div class="subscription-notification security-notification" style="display: flex; align-items: center; gap: 16px; border-top: 4px solid #ff0000; padding: 16px; ${shouldShowNewsButton ? 'margin-top: 12px;' : ''}">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Receive all ${fullLabel} updates</p>
           </div>
-          <button class="btn subscribe-security-btn" style="background: #ff0000; color: white; font-size: 1rem; font-weight: 400; padding: 0.5em 1em; border-radius: 25px;">Watch All</button>
+          <button class="btn subscribe-security-btn" style="background: #ff0000; color: white; font-size: 1rem; font-weight: 400; padding: 0.5em 1em; border-radius: 25px; transition: background 0.2s;">Watch All</button>
         </div>
       `;
     }
@@ -165,6 +165,17 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     } else {
       console.log("🎯 ERROR: Could not find insertion point!");
       return;
+    }
+
+    // Add hover effect for red Watch All button
+    const securityBtn = wrapper.querySelector('.subscribe-security-btn');
+    if (securityBtn) {
+      securityBtn.addEventListener('mouseenter', () => {
+        securityBtn.style.background = '#cc0000';
+      });
+      securityBtn.addEventListener('mouseleave', () => {
+        securityBtn.style.background = '#ff0000';
+      });
     }
 
     // Click handlers

@@ -150,7 +150,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     wrapper.className = 'subscription-notification-wrapper';
     wrapper.style.cssText = 'margin: 20px 0; width: 100%; display: flex; justify-content: flex-end;';
 
-    let html = '<div class="subscription-notification-container" style="max-width: 690px;">';
+    let html = '<div class="subscription-notification-container" style="max-width: 690px; margin-right: 10px;">';
 
     if (shouldShowNewsButton) {
       const newsStyles = getBannerStyles(true, bannerStyle);

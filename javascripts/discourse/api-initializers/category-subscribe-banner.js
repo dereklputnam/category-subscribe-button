@@ -2,6 +2,8 @@ import { apiInitializer } from "discourse/lib/api";
 import { ajax } from "discourse/lib/ajax";
 
 export default apiInitializer("category-subscribe-banner", (api) => {
+  const themeSettings = settings;
+
   console.log("🎯🎯🎯 Category Subscribe Banner: API Initializer Starting!");
 
   // Parse category IDs from settings
@@ -42,26 +44,16 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     console.log("🎯 Category found:", category.name, "ID:", category.id);
 
-    // Check if settings exists
-    console.log("🎯 Settings object:", typeof settings !== 'undefined' ? settings : "UNDEFINED!");
-    console.log("🎯 Raw subscribe_categories:", typeof settings !== 'undefined' ? settings.subscribe_categories : "N/A");
-    console.log("🎯 Raw watching_categories:", typeof settings !== 'undefined' ? settings.watching_categories : "N/A");
+    // Access theme settings
+    console.log("🎯 Theme settings available:", !!themeSettings);
+    console.log("🎯 Raw subscribe_categories:", themeSettings.subscribe_categories);
+    console.log("🎯 Raw watching_categories:", themeSettings.watching_categories);
 
-    const subscribeCategories = typeof settings !== 'undefined' ? parseCategories(settings.subscribe_categories) : [];
-    const watchingCategories = typeof settings !== 'undefined' ? parseCategories(settings.watching_categories) : [];
+    const subscribeCategories = parseCategories(themeSettings.subscribe_categories);
+    const watchingCategories = parseCategories(themeSettings.watching_categories);
 
     console.log("🎯 Subscribe cats:", subscribeCategories);
     console.log("🎯 Watching cats:", watchingCategories);
-
-    // TEMPORARY: For testing, force categories to work
-    if (category.id === 161) {
-      console.log("🎯 HARDCODED TEST: Forcing category 161 (News) to show subscribe banner");
-      subscribeCategories.push(161);
-    }
-    if (category.id === 193) {
-      console.log("🎯 HARDCODED TEST: Forcing category 193 (Security) to show watch banner");
-      watchingCategories.push(193);
-    }
 
     const isNewsCategory = subscribeCategories.includes(category.id);
     const isSecurityCategory = watchingCategories.includes(category.id);
@@ -92,8 +84,8 @@ export default apiInitializer("category-subscribe-banner", (api) => {
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
 
-    const subscribeExceptions = parseCategories(settings.subscribe_category_name_only_exceptions);
-    const watchingExceptions = parseCategories(settings.watching_category_name_only_exceptions);
+    const subscribeExceptions = parseCategories(themeSettings.subscribe_category_name_only_exceptions);
+    const watchingExceptions = parseCategories(themeSettings.watching_category_name_only_exceptions);
 
     let isNameOnlyException = false;
     if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {

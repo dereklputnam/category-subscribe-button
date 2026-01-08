@@ -8,13 +8,30 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
   // Parse category IDs from settings
   const parseCategories = (categoryData) => {
+    console.log("🎯 parseCategories input:", categoryData, "type:", typeof categoryData);
+
     if (!categoryData) return [];
+
+    // Handle string format (pipe-separated: "161|193")
+    if (typeof categoryData === 'string') {
+      const ids = categoryData.split('|')
+        .map(id => parseInt(id.trim()))
+        .filter(id => !isNaN(id) && id > 0);
+      console.log("🎯 Parsed from string:", ids);
+      return ids;
+    }
+
+    // Handle array format
     if (Array.isArray(categoryData)) {
-      return categoryData.map(item => {
+      const ids = categoryData.map(item => {
         const id = typeof item === 'object' ? item.id : item;
         return parseInt(id);
       }).filter(id => !isNaN(id) && id > 0);
+      console.log("🎯 Parsed from array:", ids);
+      return ids;
     }
+
+    console.log("🎯 Could not parse categories");
     return [];
   };
 

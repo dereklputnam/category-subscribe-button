@@ -13,7 +13,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const gradientColor = isSubscribe ? "var(--tertiary-50)" : "rgba(255,0,0,0.1)";
 
     const styles = {
-      current: `${baseStyles} border: 1px solid var(--primary); background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`,
+      current: `${baseStyles} border: 1px solid var(--primary-low-mid); background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`,
 
       minimal: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low-mid); border-top: 3px solid ${accentColor};`,
 
@@ -148,9 +148,9 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     // Create banner
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
-    wrapper.style.cssText = 'margin: 20px 0; max-width: 690px;';
+    wrapper.style.cssText = 'margin: 20px 0; width: 100%; display: flex; justify-content: flex-end;';
 
-    let html = '<div class="subscription-notification-container">';
+    let html = '<div class="subscription-notification-container" style="max-width: 690px;">';
 
     if (shouldShowNewsButton) {
       const newsStyles = getBannerStyles(true, bannerStyle);

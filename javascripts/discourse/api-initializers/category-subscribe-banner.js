@@ -6,6 +6,29 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
   console.log("🎯🎯🎯 Category Subscribe Banner: API Initializer Starting!");
 
+  // Get banner style functions
+  const getBannerStyles = (isSubscribe, style) => {
+    const baseStyles = "display: flex; align-items: center; gap: 16px; padding: 16px;";
+    const accentColor = isSubscribe ? "var(--tertiary)" : "#ff0000";
+    const gradientColor = isSubscribe ? "var(--tertiary-50)" : "rgba(255,0,0,0.1)";
+
+    const styles = {
+      current: `${baseStyles} border: 1px solid var(--primary); border-top: 4px solid ${accentColor}; background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%);`,
+
+      minimal: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low-mid); border-top: 3px solid ${accentColor};`,
+
+      card: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low); border-top: 4px solid ${accentColor}; box-shadow: 0 1px 4px rgba(0,0,0,0.08);`,
+
+      enterprise: `${baseStyles} background: var(--secondary); border: 2px solid var(--primary-medium); border-top: 5px solid ${accentColor}; box-shadow: 0 2px 12px rgba(0,0,0,0.15);`,
+
+      gradient: `${baseStyles} background: linear-gradient(to right, ${gradientColor}, var(--secondary)); border: 1px solid var(--primary-low); border-top: 3px solid ${accentColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.06);`,
+
+      left_accent: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low); border-left: 5px solid ${accentColor}; box-shadow: 0 1px 2px rgba(0,0,0,0.05);`
+    };
+
+    return styles[style] || styles.current;
+  };
+
   // Parse category IDs from settings
   const parseCategories = (categoryData) => {
     console.log("🎯 parseCategories input:", categoryData, "type:", typeof categoryData);
@@ -118,6 +141,10 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     // Remove existing
     document.querySelector('.subscription-notification-wrapper')?.remove();
 
+    // Get selected banner style
+    const bannerStyle = themeSettings.banner_style || 'current';
+    console.log("🎯 Using banner style:", bannerStyle);
+
     // Create banner
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
@@ -126,8 +153,9 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     let html = '<div class="subscription-notification-container">';
 
     if (shouldShowNewsButton) {
+      const newsStyles = getBannerStyles(true, bannerStyle);
       html += `
-        <div class="subscription-notification news-notification" style="display: flex; align-items: center; gap: 16px; border: 1px solid var(--primary); border-top: 4px solid var(--tertiary); padding: 16px; background: linear-gradient(90deg, var(--tertiary-50) 0%, var(--secondary) 100%);">
+        <div class="subscription-notification news-notification" style="${newsStyles}">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Get notified of all ${fullLabel} topics</p>
@@ -138,8 +166,9 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     }
 
     if (shouldShowSecurityButton) {
+      const securityStyles = getBannerStyles(false, bannerStyle);
       html += `
-        <div class="subscription-notification security-notification" style="display: flex; align-items: center; gap: 16px; border: 1px solid var(--primary); border-top: 4px solid #ff0000; padding: 16px; background: linear-gradient(90deg, rgba(255,0,0,0.1) 0%, var(--secondary) 100%); ${shouldShowNewsButton ? 'margin-top: 12px;' : ''}">
+        <div class="subscription-notification security-notification" style="${securityStyles}${shouldShowNewsButton ? ' margin-top: 12px;' : ''}">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Receive all ${fullLabel} updates</p>

@@ -127,7 +127,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     if (shouldShowNewsButton) {
       html += `
-        <div class="subscription-notification news-notification" style="display: flex; align-items: center; gap: 16px; border-top: 4px solid var(--tertiary); padding: 16px;">
+        <div class="subscription-notification news-notification" style="display: flex; align-items: center; gap: 16px; border: 2px solid var(--primary-low); border-top: 4px solid var(--tertiary); padding: 16px; border-radius: 4px; background: var(--secondary);">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Get notified of all ${fullLabel} topics</p>
@@ -139,7 +139,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     if (shouldShowSecurityButton) {
       html += `
-        <div class="subscription-notification security-notification" style="display: flex; align-items: center; gap: 16px; border-top: 4px solid #ff0000; padding: 16px; ${shouldShowNewsButton ? 'margin-top: 12px;' : ''}">
+        <div class="subscription-notification security-notification" style="display: flex; align-items: center; gap: 16px; border: 2px solid var(--primary-low); border-top: 4px solid #ff0000; padding: 16px; border-radius: 4px; background: var(--secondary); ${shouldShowNewsButton ? 'margin-top: 12px;' : ''}">
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Receive all ${fullLabel} updates</p>

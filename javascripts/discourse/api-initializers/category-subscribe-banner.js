@@ -8,12 +8,12 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
   // Get banner style functions
   const getBannerStyles = (isSubscribe, style) => {
-    const baseStyles = "display: flex; align-items: center; gap: 16px; padding: 16px;";
+    const baseStyles = "display: flex; align-items: center; gap: 16px; padding: 16px; padding-top: 20px;";
     const accentColor = isSubscribe ? "var(--tertiary)" : "#ff0000";
     const gradientColor = isSubscribe ? "var(--tertiary-50)" : "rgba(255,0,0,0.1)";
 
     const styles = {
-      current: `${baseStyles} border: 1px solid var(--primary); border-top: 4px solid ${accentColor}; background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`,
+      current: `${baseStyles} border: 1px solid var(--primary); background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`,
 
       minimal: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low-mid); border-top: 3px solid ${accentColor};`,
 
@@ -157,7 +157,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
       const accentColor = "var(--tertiary)";
       html += `
         <div class="subscription-notification news-notification" style="${newsStyles}">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--primary);"></div>
+          <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: ${accentColor};"></div>
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Get notified of all ${fullLabel} topics</p>
@@ -171,7 +171,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
       const securityStyles = getBannerStyles(false, bannerStyle);
       html += `
         <div class="subscription-notification security-notification" style="${securityStyles}${shouldShowNewsButton ? ' margin-top: 12px;' : ''}">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--primary);"></div>
+          <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: #ff0000;"></div>
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Receive all ${fullLabel} updates</p>

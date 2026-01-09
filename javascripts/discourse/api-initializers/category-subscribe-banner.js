@@ -149,10 +149,10 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
 
-    // Use responsive CSS for width matching
-    const containerStyles = 'width: 100%; max-width: 690px;';
+    // Match post stream width exactly
+    const containerStyles = 'width: 100%;';
 
-    wrapper.style.cssText = 'margin: 20px 0; width: 100%; display: flex; justify-content: flex-end;';
+    wrapper.style.cssText = 'margin: 20px 0; width: 100%;';
 
     let html = `<div class="subscription-notification-container" style="${containerStyles}">`;
 

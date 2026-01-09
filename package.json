@@ -13,5 +13,26 @@
     "yarn": "please-use-pnpm",
     "pnpm": "9.x"
   },
-  "packageManager": "pnpm@9.15.5"
+  "packageManager": "pnpm@9.15.5",
+  "name": "category-subscribe-button",
+  "version": "1.0.0",
+  "description": "**Theme Summary**",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dereklputnam/category-subscribe-button.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dereklputnam/category-subscribe-button/issues"
+  },
+  "homepage": "https://github.com/dereklputnam/category-subscribe-button#readme"
 }

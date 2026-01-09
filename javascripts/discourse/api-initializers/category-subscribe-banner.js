@@ -149,12 +149,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
 
-    // Match post stream width exactly
-    const containerStyles = 'width: 100%;';
-
-    wrapper.style.cssText = 'margin: 20px 0; width: 100%;';
-
-    let html = `<div class="subscription-notification-container" style="${containerStyles}">`;
+    let html = `<div class="subscription-notification-container">`;
 
     if (shouldShowNewsButton) {
       const newsStyles = getBannerStyles(true, bannerStyle);
@@ -187,14 +182,6 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     html += '</div>';
     wrapper.innerHTML = html;
-
-    // Match the width of topic-body (actual content width)
-    const topicBody = document.querySelector('.topic-body');
-    if (topicBody) {
-      const topicBodyWidth = topicBody.offsetWidth;
-      wrapper.style.maxWidth = `${topicBodyWidth}px`;
-      console.log("🎯 Matching topic-body width:", topicBodyWidth);
-    }
 
     // Find insertion point
     const postStream = document.querySelector('.post-stream');

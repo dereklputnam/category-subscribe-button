@@ -145,12 +145,23 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const bannerStyle = themeSettings.banner_style || 'current';
     console.log("🎯 Using banner style:", bannerStyle);
 
-    // Create banner
+    // Create banner - match post wrapper dimensions
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
+
+    // Try to get the post wrapper to match its width
+    const postWrapper = document.querySelector('.post-stream') || document.querySelector('#topic-title');
+    let containerStyles = 'max-width: 690px;';
+
+    if (postWrapper) {
+      const postWrapperWidth = postWrapper.offsetWidth;
+      containerStyles = `width: ${postWrapperWidth}px;`;
+      console.log("🎯 Matching post wrapper width:", postWrapperWidth);
+    }
+
     wrapper.style.cssText = 'margin: 20px 0; width: 100%; display: flex; justify-content: flex-end;';
 
-    let html = '<div class="subscription-notification-container" style="max-width: 690px; margin-right: 40px;">';
+    let html = `<div class="subscription-notification-container" style="${containerStyles}">`;
 
     if (shouldShowNewsButton) {
       const newsStyles = getBannerStyles(true, bannerStyle);

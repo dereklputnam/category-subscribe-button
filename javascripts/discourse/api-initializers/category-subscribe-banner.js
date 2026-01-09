@@ -127,23 +127,28 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const subscribeExceptions = parseCategories(themeSettings.subscribe_category_name_only_exceptions);
     const watchingExceptions = parseCategories(themeSettings.watching_category_name_only_exceptions);
 
+    console.log("🎯 Subscribe exceptions:", subscribeExceptions);
+    console.log("🎯 Watching exceptions:", watchingExceptions);
+    console.log("🎯 Current category ID:", category.id);
+    console.log("🎯 shouldShowNewsButton:", shouldShowNewsButton);
+    console.log("🎯 shouldShowSecurityButton:", shouldShowSecurityButton);
+
     let isNameOnlyException = false;
     if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {
       isNameOnlyException = true;
+      console.log("🎯 Matched subscribe exception - using name only");
     } else if (shouldShowSecurityButton && watchingExceptions.includes(category.id)) {
       isNameOnlyException = true;
+      console.log("🎯 Matched watching exception - using name only");
     }
 
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
+    console.log("🎯 Final label:", fullLabel, "| Name only:", isNameOnlyException);
 
     console.log("🎯 Creating banner for:", fullLabel);
 
     // Remove existing
     document.querySelector('.subscription-notification-wrapper')?.remove();
-
-    // Get selected banner style
-    const bannerStyle = themeSettings.banner_style || 'current';
-    console.log("🎯 Using banner style:", bannerStyle);
 
     // Create banner with responsive CSS
     const wrapper = document.createElement('div');
@@ -152,7 +157,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     let html = `<div class="subscription-notification-container">`;
 
     if (shouldShowNewsButton) {
-      const newsStyles = getBannerStyles(true, bannerStyle);
+      const newsStyles = getBannerStyles(true, 'current');
       const accentColor = "var(--tertiary)";
       html += `
         <div class="subscription-notification news-notification" style="${newsStyles}">
@@ -167,7 +172,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     }
 
     if (shouldShowSecurityButton) {
-      const securityStyles = getBannerStyles(false, bannerStyle);
+      const securityStyles = getBannerStyles(false, 'current');
       html += `
         <div class="subscription-notification security-notification" style="${securityStyles}${shouldShowNewsButton ? ' margin-top: 12px;' : ''}">
           <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: #ff0000;"></div>

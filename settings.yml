@@ -21,15 +21,3 @@ watching_category_name_only_exceptions:
   list_type: category
   default: ""
   description: "Select watching categories that should display only their category name (not 'Parent > Child' format). E.g., 'Security Advisories' instead of '1Secure Security Advisories'."
-
-banner_style:
-  type: enum
-  default: "current"
-  choices:
-    - current
-    - minimal
-    - card
-    - enterprise
-    - gradient
-    - left_accent
-  description: "Choose the visual style for subscription banners. Current: gradient with top stripe | Minimal: clean native | Card: subtle elevation | Enterprise: bold borders | Gradient: soft color fade | Left Accent: modern SaaS style"

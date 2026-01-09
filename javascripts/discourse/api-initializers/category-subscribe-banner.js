@@ -4,109 +4,57 @@ import { ajax } from "discourse/lib/ajax";
 export default apiInitializer("category-subscribe-banner", (api) => {
   const themeSettings = settings;
 
-  console.log("🎯🎯🎯 Category Subscribe Banner: API Initializer Starting!");
-
-  // Get banner style functions
-  const getBannerStyles = (isSubscribe, style) => {
+  // Get banner styles
+  const getBannerStyles = (isSubscribe) => {
     const baseStyles = "display: flex; align-items: center; gap: 16px; padding: 16px; padding-top: 20px;";
-    const accentColor = isSubscribe ? "var(--tertiary)" : "#ff0000";
     const gradientColor = isSubscribe ? "var(--tertiary-50)" : "rgba(255,0,0,0.1)";
-
-    const styles = {
-      current: `${baseStyles} border: 1px solid var(--primary-low-mid); background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`,
-
-      minimal: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low-mid); border-top: 3px solid ${accentColor};`,
-
-      card: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low); border-top: 4px solid ${accentColor}; box-shadow: 0 1px 4px rgba(0,0,0,0.08);`,
-
-      enterprise: `${baseStyles} background: var(--secondary); border: 2px solid var(--primary-medium); border-top: 5px solid ${accentColor}; box-shadow: 0 2px 12px rgba(0,0,0,0.15);`,
-
-      gradient: `${baseStyles} background: linear-gradient(to right, ${gradientColor}, var(--secondary)); border: 1px solid var(--primary-low); border-top: 3px solid ${accentColor}; box-shadow: 0 1px 3px rgba(0,0,0,0.06);`,
-
-      left_accent: `${baseStyles} background: var(--secondary); border: 1px solid var(--primary-low); border-left: 5px solid ${accentColor}; box-shadow: 0 1px 2px rgba(0,0,0,0.05);`
-    };
-
-    return styles[style] || styles.current;
+    return `${baseStyles} border: 1px solid var(--primary-low-mid); background: linear-gradient(90deg, ${gradientColor} 0%, var(--secondary) 100%); position: relative;`;
   };
 
   // Parse category IDs from settings
   const parseCategories = (categoryData) => {
-    console.log("🎯 parseCategories input:", categoryData, "type:", typeof categoryData);
-
     if (!categoryData) return [];
 
     // Handle string format (pipe-separated: "161|193")
     if (typeof categoryData === 'string') {
-      const ids = categoryData.split('|')
+      return categoryData.split('|')
         .map(id => parseInt(id.trim()))
         .filter(id => !isNaN(id) && id > 0);
-      console.log("🎯 Parsed from string:", ids);
-      return ids;
     }
 
     // Handle array format
     if (Array.isArray(categoryData)) {
-      const ids = categoryData.map(item => {
+      return categoryData.map(item => {
         const id = typeof item === 'object' ? item.id : item;
         return parseInt(id);
       }).filter(id => !isNaN(id) && id > 0);
-      console.log("🎯 Parsed from array:", ids);
-      return ids;
     }
 
-    console.log("🎯 Could not parse categories");
     return [];
   };
 
   const showSubscribeBanner = () => {
-    console.log("🎯 showSubscribeBanner called");
-
     const currentUser = api.getCurrentUser();
-    if (!currentUser) {
-      console.log("🎯 No user");
-      return;
-    }
+    if (!currentUser) return;
 
     // Get topic from the page
     const topicController = api.container?.lookup?.("controller:topic");
-    if (!topicController?.model) {
-      console.log("🎯 No topic controller");
-      return;
-    }
+    if (!topicController?.model) return;
 
     const topic = topicController.model;
     const category = topic.category;
-
-    if (!category) {
-      console.log("🎯 No category");
-      return;
-    }
-
-    console.log("🎯 Category found:", category.name, "ID:", category.id);
-
-    // Access theme settings
-    console.log("🎯 Theme settings available:", !!themeSettings);
-    console.log("🎯 Raw subscribe_categories:", themeSettings.subscribe_categories);
-    console.log("🎯 Raw watching_categories:", themeSettings.watching_categories);
+    if (!category) return;
 
     const subscribeCategories = parseCategories(themeSettings.subscribe_categories);
     const watchingCategories = parseCategories(themeSettings.watching_categories);
     const subscribeExceptions = parseCategories(themeSettings.subscribe_category_name_only_exceptions);
     const watchingExceptions = parseCategories(themeSettings.watching_category_name_only_exceptions);
 
-    console.log("🎯 Subscribe cats:", subscribeCategories);
-    console.log("🎯 Watching cats:", watchingCategories);
-    console.log("🎯 Subscribe exceptions:", subscribeExceptions);
-    console.log("🎯 Watching exceptions:", watchingExceptions);
-
     // Check if category is in main lists OR exception lists
     const isNewsCategory = subscribeCategories.includes(category.id) || subscribeExceptions.includes(category.id);
     const isSecurityCategory = watchingCategories.includes(category.id) || watchingExceptions.includes(category.id);
 
-    console.log("🎯 Is news category:", isNewsCategory, "Is security category:", isSecurityCategory);
-
     if (!isNewsCategory && !isSecurityCategory) {
-      console.log("🎯 Category not in list");
       document.querySelector('.subscription-notification-wrapper')?.remove();
       return;
     }
@@ -117,10 +65,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const shouldShowNewsButton = isNewsCategory && !watchedFirst.includes(category.id);
     const shouldShowSecurityButton = isSecurityCategory && !watched.includes(category.id);
 
-    console.log("🎯 Should show news?", shouldShowNewsButton, "security?", shouldShowSecurityButton);
-
     if (!shouldShowNewsButton && !shouldShowSecurityButton) {
-      console.log("🎯 Already subscribed");
       document.querySelector('.subscription-notification-wrapper')?.remove();
       return;
     }
@@ -133,11 +78,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     // Categories in exception lists should show name only
     const isNameOnlyException = subscribeExceptions.includes(category.id) || watchingExceptions.includes(category.id);
-
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
-    console.log("🎯 Final label:", fullLabel, "| Name only exception:", isNameOnlyException);
-
-    console.log("🎯 Creating banner for:", fullLabel);
 
     // Remove existing
     document.querySelector('.subscription-notification-wrapper')?.remove();
@@ -149,11 +90,10 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     let html = `<div class="subscription-notification-container">`;
 
     if (shouldShowNewsButton) {
-      const newsStyles = getBannerStyles(true, 'current');
-      const accentColor = "var(--tertiary)";
+      const newsStyles = getBannerStyles(true);
       html += `
         <div class="subscription-notification news-notification" style="${newsStyles}">
-          <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: ${accentColor};"></div>
+          <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: var(--tertiary);"></div>
           <div style="flex: 1;">
             <h4 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700;">Stay Informed</h4>
             <p style="margin: 0; color: var(--primary-medium);">Get notified of all ${fullLabel} topics</p>
@@ -164,7 +104,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     }
 
     if (shouldShowSecurityButton) {
-      const securityStyles = getBannerStyles(false, 'current');
+      const securityStyles = getBannerStyles(false);
       html += `
         <div class="subscription-notification security-notification" style="${securityStyles}${shouldShowNewsButton ? ' margin-top: 12px;' : ''}">
           <div style="position: absolute; top: 1px; left: 1px; right: 1px; height: 4px; background: #ff0000;"></div>
@@ -189,9 +129,8 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     if (insertionPoint) {
       insertionPoint.insertAdjacentElement('beforebegin', wrapper);
-      console.log("🎯 Banner inserted!");
     } else {
-      console.log("🎯 ERROR: Could not find insertion point!");
+      console.error("Category Subscribe Banner: Could not find insertion point");
       return;
     }
 
@@ -208,7 +147,6 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     // Click handlers
     wrapper.querySelector('.subscribe-news-btn')?.addEventListener('click', () => {
-      console.log("🎯 News clicked");
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: 4 }
@@ -219,11 +157,14 @@ export default apiInitializer("category-subscribe-banner", (api) => {
         currentUser.watched_first_post_category_ids.push(category.id);
         wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success-high); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You're now subscribed to ${fullLabel}</div>`;
         setTimeout(() => wrapper.remove(), 5000);
-      }).catch(err => console.error("🎯 Error:", err));
+      }).catch(err => {
+        console.error("Category Subscribe Banner: Failed to subscribe", err);
+        wrapper.innerHTML = `<div style="background: var(--danger-low); color: var(--danger-high); padding: 16px; text-align: center; border: 1px solid var(--danger); font-size: 15px; font-weight: 500;">❌ Failed to subscribe. Please try again.</div>`;
+        setTimeout(() => wrapper.remove(), 5000);
+      });
     });
 
     wrapper.querySelector('.subscribe-security-btn')?.addEventListener('click', () => {
-      console.log("🎯 Security clicked");
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: 3 }
@@ -234,21 +175,19 @@ export default apiInitializer("category-subscribe-banner", (api) => {
         currentUser.watched_category_ids.push(category.id);
         wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success-high); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You'll receive all updates for ${fullLabel}</div>`;
         setTimeout(() => wrapper.remove(), 5000);
-      }).catch(err => console.error("🎯 Error:", err));
+      }).catch(err => {
+        console.error("Category Subscribe Banner: Failed to watch", err);
+        wrapper.innerHTML = `<div style="background: var(--danger-low); color: var(--danger-high); padding: 16px; text-align: center; border: 1px solid var(--danger); font-size: 15px; font-weight: 500;">❌ Failed to watch category. Please try again.</div>`;
+        setTimeout(() => wrapper.remove(), 5000);
+      });
     });
   };
 
   // Try on page change
-  api.onPageChange((url) => {
-    console.log("🎯 Page changed:", url);
+  api.onPageChange(() => {
     setTimeout(showSubscribeBanner, 300);
   });
 
   // Try on initial load
-  setTimeout(() => {
-    console.log("🎯 Initial load check");
-    showSubscribeBanner();
-  }, 1000);
-
-  console.log("🎯🎯🎯 Category Subscribe Banner: Initializer Registered!");
+  setTimeout(showSubscribeBanner, 1000);
 });

@@ -8,7 +8,7 @@ subscribe_category_name_only_exceptions:
   type: list
   list_type: category
   default: ""
-  description: "Select subscribe categories that should display only their category name (not 'Parent > Child' format). E.g., 'Security Advisories' instead of '1Secure Security Advisories'."
+  description: "Categories that should show a Subscribe button with name-only display (not 'Parent > Child' format). These categories will automatically receive subscribe treatment even if not in the main subscribe_categories list."
 
 watching_categories:
   type: list
@@ -20,4 +20,4 @@ watching_category_name_only_exceptions:
   type: list
   list_type: category
   default: ""
-  description: "Select watching categories that should display only their category name (not 'Parent > Child' format). E.g., 'Security Advisories' instead of '1Secure Security Advisories'."
+  description: "Categories that should show a Watch All button with name-only display (not 'Parent > Child' format). These categories will automatically receive watching treatment even if not in the main watching_categories list."

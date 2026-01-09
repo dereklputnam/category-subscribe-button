@@ -91,12 +91,19 @@ export default apiInitializer("category-subscribe-banner", (api) => {
 
     const subscribeCategories = parseCategories(themeSettings.subscribe_categories);
     const watchingCategories = parseCategories(themeSettings.watching_categories);
+    const subscribeExceptions = parseCategories(themeSettings.subscribe_category_name_only_exceptions);
+    const watchingExceptions = parseCategories(themeSettings.watching_category_name_only_exceptions);
 
     console.log("🎯 Subscribe cats:", subscribeCategories);
     console.log("🎯 Watching cats:", watchingCategories);
+    console.log("🎯 Subscribe exceptions:", subscribeExceptions);
+    console.log("🎯 Watching exceptions:", watchingExceptions);
 
-    const isNewsCategory = subscribeCategories.includes(category.id);
-    const isSecurityCategory = watchingCategories.includes(category.id);
+    // Check if category is in main lists OR exception lists
+    const isNewsCategory = subscribeCategories.includes(category.id) || subscribeExceptions.includes(category.id);
+    const isSecurityCategory = watchingCategories.includes(category.id) || watchingExceptions.includes(category.id);
+
+    console.log("🎯 Is news category:", isNewsCategory, "Is security category:", isSecurityCategory);
 
     if (!isNewsCategory && !isSecurityCategory) {
       console.log("🎯 Category not in list");
@@ -118,32 +125,17 @@ export default apiInitializer("category-subscribe-banner", (api) => {
       return;
     }
 
-    // Get label
+    // Get label - check if category is in exception list (name only) or use full label
     const allCategories = api.container.lookup("site:main").get("categories");
     const parent = category.parent_category_id
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
 
-    const subscribeExceptions = parseCategories(themeSettings.subscribe_category_name_only_exceptions);
-    const watchingExceptions = parseCategories(themeSettings.watching_category_name_only_exceptions);
-
-    console.log("🎯 Subscribe exceptions:", subscribeExceptions);
-    console.log("🎯 Watching exceptions:", watchingExceptions);
-    console.log("🎯 Current category ID:", category.id);
-    console.log("🎯 shouldShowNewsButton:", shouldShowNewsButton);
-    console.log("🎯 shouldShowSecurityButton:", shouldShowSecurityButton);
-
-    let isNameOnlyException = false;
-    if (shouldShowNewsButton && subscribeExceptions.includes(category.id)) {
-      isNameOnlyException = true;
-      console.log("🎯 Matched subscribe exception - using name only");
-    } else if (shouldShowSecurityButton && watchingExceptions.includes(category.id)) {
-      isNameOnlyException = true;
-      console.log("🎯 Matched watching exception - using name only");
-    }
+    // Categories in exception lists should show name only
+    const isNameOnlyException = subscribeExceptions.includes(category.id) || watchingExceptions.includes(category.id);
 
     const fullLabel = isNameOnlyException ? category.name : (parent ? `${parent.name} ${category.name}` : category.name);
-    console.log("🎯 Final label:", fullLabel, "| Name only:", isNameOnlyException);
+    console.log("🎯 Final label:", fullLabel, "| Name only exception:", isNameOnlyException);
 
     console.log("🎯 Creating banner for:", fullLabel);
 

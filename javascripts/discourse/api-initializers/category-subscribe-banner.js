@@ -212,10 +212,6 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     // Click handlers
     wrapper.querySelector('.subscribe-news-btn')?.addEventListener('click', () => {
       console.log("🎯 News clicked");
-      const button = wrapper.querySelector('.subscribe-news-btn');
-      button.disabled = true;
-      button.textContent = 'Subscribing...';
-
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: 4 }
@@ -224,35 +220,13 @@ export default apiInitializer("category-subscribe-banner", (api) => {
           currentUser.watched_first_post_category_ids = [];
         }
         currentUser.watched_first_post_category_ids.push(category.id);
-
-        // Fade out banner
-        wrapper.style.transition = 'opacity 0.3s ease-out';
-        wrapper.style.opacity = '0';
-
-        setTimeout(() => {
-          wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500; opacity: 0; transition: opacity 0.3s ease-in;">✅ You're now subscribed to ${fullLabel}</div>`;
-
-          // Fade in success message
-          setTimeout(() => {
-            const successMsg = wrapper.querySelector('div');
-            if (successMsg) successMsg.style.opacity = '1';
-          }, 10);
-
-          // Remove after 4 seconds
-          setTimeout(() => {
-            wrapper.style.opacity = '0';
-            setTimeout(() => wrapper.remove(), 300);
-          }, 4000);
-        }, 300);
+        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You're now subscribed to ${fullLabel}</div>`;
+        setTimeout(() => wrapper.remove(), 5000);
       }).catch(err => console.error("🎯 Error:", err));
     });
 
     wrapper.querySelector('.subscribe-security-btn')?.addEventListener('click', () => {
       console.log("🎯 Security clicked");
-      const button = wrapper.querySelector('.subscribe-security-btn');
-      button.disabled = true;
-      button.textContent = 'Subscribing...';
-
       ajax(`/category/${category.id}/notifications`, {
         type: "POST",
         data: { notification_level: 3 }
@@ -261,26 +235,8 @@ export default apiInitializer("category-subscribe-banner", (api) => {
           currentUser.watched_category_ids = [];
         }
         currentUser.watched_category_ids.push(category.id);
-
-        // Fade out banner
-        wrapper.style.transition = 'opacity 0.3s ease-out';
-        wrapper.style.opacity = '0';
-
-        setTimeout(() => {
-          wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500; opacity: 0; transition: opacity 0.3s ease-in;">✅ You'll receive all updates for ${fullLabel}</div>`;
-
-          // Fade in success message
-          setTimeout(() => {
-            const successMsg = wrapper.querySelector('div');
-            if (successMsg) successMsg.style.opacity = '1';
-          }, 10);
-
-          // Remove after 4 seconds
-          setTimeout(() => {
-            wrapper.style.opacity = '0';
-            setTimeout(() => wrapper.remove(), 300);
-          }, 4000);
-        }, 300);
+        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You'll receive all updates for ${fullLabel}</div>`;
+        setTimeout(() => wrapper.remove(), 5000);
       }).catch(err => console.error("🎯 Error:", err));
     });
   };

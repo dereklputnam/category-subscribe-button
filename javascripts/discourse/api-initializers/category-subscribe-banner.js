@@ -145,7 +145,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     const bannerStyle = themeSettings.banner_style || 'current';
     console.log("🎯 Using banner style:", bannerStyle);
 
-    // Create banner with responsive width
+    // Create banner with responsive CSS
     const wrapper = document.createElement('div');
     wrapper.className = 'subscription-notification-wrapper';
 

@@ -188,6 +188,14 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     html += '</div>';
     wrapper.innerHTML = html;
 
+    // Match the width of topic-body (actual content width)
+    const topicBody = document.querySelector('.topic-body');
+    if (topicBody) {
+      const topicBodyWidth = topicBody.offsetWidth;
+      wrapper.style.maxWidth = `${topicBodyWidth}px`;
+      console.log("🎯 Matching topic-body width:", topicBodyWidth);
+    }
+
     // Find insertion point
     const postStream = document.querySelector('.post-stream');
     const topicTitle = document.querySelector('#topic-title');

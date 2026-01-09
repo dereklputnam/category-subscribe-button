@@ -220,7 +220,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
           currentUser.watched_first_post_category_ids = [];
         }
         currentUser.watched_first_post_category_ids.push(category.id);
-        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You're now subscribed to ${fullLabel}</div>`;
+        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success-high); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You're now subscribed to ${fullLabel}</div>`;
         setTimeout(() => wrapper.remove(), 5000);
       }).catch(err => console.error("🎯 Error:", err));
     });
@@ -235,7 +235,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
           currentUser.watched_category_ids = [];
         }
         currentUser.watched_category_ids.push(category.id);
-        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You'll receive all updates for ${fullLabel}</div>`;
+        wrapper.innerHTML = `<div style="background: var(--success-low); color: var(--success-high); padding: 16px; text-align: center; border: 1px solid var(--success); font-size: 15px; font-weight: 500;">✅ You'll receive all updates for ${fullLabel}</div>`;
         setTimeout(() => wrapper.remove(), 5000);
       }).catch(err => console.error("🎯 Error:", err));
     });

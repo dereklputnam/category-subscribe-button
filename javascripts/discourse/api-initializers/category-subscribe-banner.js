@@ -71,7 +71,7 @@ export default apiInitializer("category-subscribe-banner", (api) => {
     }
 
     // Get label - check if category is in exception list (name only) or use full label
-    const allCategories = api.container.lookup("site:main").get("categories");
+    const allCategories = api.container.lookup("service:site").get("categories");
     const parent = category.parent_category_id
       ? allCategories.find(c => c.id === category.parent_category_id)
       : null;
